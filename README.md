@@ -8,24 +8,12 @@ This pipeline integrates molecular dynamics (MD) simulations with FoldX stabilit
 
 The pipeline offers two optimization strategies: FoldX RepairPDB for fast side chain optimization, and MODELLER for more thorough refinement with backbone flexibility to resolve assembly clashes.
 
-**Key capabilities:**
 - Extract frames from MD trajectories
 - Assemble complete viral envelopes from asymmetric units using BIOMT transformations
 - Optimize structures with FoldX RepairPDB (side chains only) or MODELLER (backbone + side chains)
 - Calculate stability metrics (ΔΔG) for viral assemblies
 - Perform alanine scanning mutagenesis for all residues
 - Statistical analysis with proper error propagation for hierarchical data
-
-## Features
-
-- **Dual optimization strategies**: FoldX RepairPDB for side chain optimization and MODELLER for backbone+side chain refinement
-- **Parallel processing**: Utilizes multiprocessing for efficient large-scale calculations
-- **Flexible assembly**: Supports multiple template structures and symmetry operations
-- **Automatic chain handling**: Detects available chains to prevent FoldX failures
-- **Comprehensive analysis**: Hierarchical statistical analysis distinguishing independent frames from correlated symmetry units
-- **Trajectory sampling**: Extracts representative frames from GROMACS trajectories
-- **Mutation analysis**: Systematic alanine scanning across specified chains
-- **Energy-based refinement**: MODELLER combines conjugate gradients and molecular dynamics to resolve clashes
 
 ## Installation
 
@@ -153,20 +141,6 @@ python analyze_foldx.py \
     --energy-column total_energy
 ```
 
-## Workflow Details
-
-### Pipeline Stages
-
-1. **Frame Extraction**: Samples representative structures from MD trajectories at specified intervals
-2. **Structure Optimization**: Repairs side chain clashes and optimizes rotamers with FoldX RepairPDB
-3. **Assembly Construction**: Builds complete viral envelopes using BIOMT transformations from template structures
-4. **Assembly Refinement**: Two options available:
-   - **FoldX RepairPDB**: Fast side chain optimization (default in pipeline)
-   - **MODELLER**: Slower but more thorough backbone+side chain refinement using CG+MD protocol
-5. **Stability Calculation**: Computes energy terms for all assemblies
-6. **Mutation Analysis**: Performs systematic alanine scanning to identify stabilizing/destabilizing residues
-7. **Statistical Analysis**: Aggregates results with proper error propagation across frames and symmetry units
-
 ### Output Files
 
 The pipeline generates several output directories:
@@ -226,24 +200,6 @@ The MODELLER refinement uses a three-stage protocol: **CG → MD → CG**
 - **Thorough refinement**: `--cg-steps 100 --md-steps 200 --md-temp 400` (slow, aggressive relaxation)
 
 Higher temperatures and more MD steps provide stronger relaxation but increase computational cost.
-
-## Important Notes
-
-### Limitations
-
-- **Rigid body assembly with FoldX**: BIOMT-based assembly creates backbone clashes that FoldX RepairPDB cannot fully resolve (side chains only). MODELLER refinement addresses this by allowing backbone movement but is computationally slower.
-- **Large structures**: Complete viral assemblies can be very large; ensure sufficient memory
-- **Chain correspondence**: Template and target structures must have compatible chain organizations
-
-### Best Practices
-
-- Start with well-equilibrated MD trajectories
-- Use templates from high-resolution cryo-EM or crystal structures
-- Validate assembly quality before extensive analysis
-- **Optimization strategy**:
-  - Use FoldX RepairPDB for fast side chain optimization (suitable for most cases)
-  - Use MODELLER refinement when backbone clashes are severe (slower but allows backbone movement)
-  - For critical structures, consider running both: FoldX first for speed, then MODELLER for final refinement
 
 ## Analysis Notebooks
 
